@@ -1,11 +1,14 @@
 export default async function handler(req, res) {
   const PROXY_BASE_URL = 'https://kurseut-cdnkocax.hf.space';
   
-  // Mengambil token dari Environment Variable Vercel / fallback manual
-  //const SECRET_TOKEN = process.env.PROXY_TOKEN || '1pT4rN7xM0qTrNxMqKwBy_uJhLnPrTvXzAvcFmGsHjQyEoWiUaZlCfVpTrNxMqKwBy_uJhLnPrTvXzAcFmGsHjQyEoWiUaZlCfVpTrNxMqKwBy~9kP_rX2vL-qT48wY6zA1cF~3hJ5n0rB_t9uD_kM4vX6sH8jQ_yE1oW3iU5aZ7lC9fV2pT_rN6xM8qK0wB~y3uJ5hL7nP9rT2vX4zA6cF8mG0sHkzA4cF6hJ8nP0rB_t~k9uD2mG5vX7sH0jQ_yE3oW6iU9aZ_lC2fV4pT_rN7xM0qK3wB~y8uJ1hL4nP6rT9vX2zA5NxMqKwBy~4eQ8tY1pR3xM5vL7qT9wY2zA4cF6hJ8nP0rB_t~k9uD2mG5vX7sH0jQ_yE3oW6iU9aZ_lC2fV4pT_rN6xM8qK0wB~y3uJ5hL7nP9rT2vX4zA6cF8mG0sHkzA4cF6hJ8nP0rB_t~k9uD2mG5vX7sH0jQ_yE3oW6iU9aZ_lC2fV4pT_rN7xM0qK3wB~y8uJ1hL4nP6rT9vX2zA5uJhLnPrTvXzAcFmGsHjQyEoWiUaZlCfVpTrNxMqKwBy_uJhLnPrTvXzAcFmGsHjQyEoWiUaZlCfVpTrNxMqKwBy~4eQ8tY1pR3NxMqKwBy~4eQ8tY1pR3xM5vL7qT9wY2zA4cF6hJ8nP0rB_t~k9uD2mG5vX7sH0jQ_yE3oW6iU9aZ_lC2fV4pT_rN7xM0qK3wB~y8uJ1hL4nP6rT9vX2zA5NxMqKwBy~4eQ8tY1pR3xM5vL7qT9wY2zA4cF6hJ8nP0rB_t~k9uD2mG5vX7sH0jQ_yE3oW6iU9aZ_lC2fV4pT_rN7xM0qK3wB~y8uJ1hL4nP6rT9vX2zA5';
+  // Wajib mengambil dari Environment Variable Vercel
   const SECRET_TOKEN = process.env.PROXY_TOKEN;
-  
-  const { channel } = req.query; // Panggilan URL nanti: ?channel=cg_hbohd
+
+  if (!SECRET_TOKEN) {
+    return res.status(500).json({ error: "PROXY_TOKEN belum diset di Environment Variables Vercel!" });
+  }
+
+  const { channel } = req.query;
 
   if (!channel) {
     return res.status(400).json({ error: "Parameter channel tidak ada" });
@@ -26,7 +29,6 @@ export default async function handler(req, res) {
     const data = await hfResponse.json();
 
     if (data && data.mpd) {
-      // Redirect 302 otomatis ke URL asli Mediaquest
       return res.redirect(302, data.mpd);
     } else {
       return res.status(502).json({ error: "Ditolak HF", response: data });
